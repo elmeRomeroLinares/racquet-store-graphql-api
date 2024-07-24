@@ -1,0 +1,42 @@
+enum UserRole {
+  ADMIN
+  USER
+  GUEST
+}
+
+type User {
+  id: ID!
+  username: String!
+  password: String!
+  role: UserRole!
+  createdAt: String!
+}
+
+type SignupResponse {
+  id: ID!
+  username: String!
+  role: UserRole!
+}
+
+type SigninResponse {
+  token: String!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  createdAt: String!
+}
+
+type Query {
+  getUser(id: ID!): User
+  getUsers: [User]
+  getCategory(id: ID!): Category
+  getCategories: [Category]
+}
+
+type Mutation {
+  signup(username: String!, password: String!, role: UserRole!): SignupResponse
+  signin(username: String!, password: String!): SigninResponse
+  createCategory(name: String!): Category
+}
