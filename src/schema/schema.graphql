@@ -10,6 +10,7 @@ type User {
   password: String!
   role: UserRole!
   createdAt: String!
+  cart: Cart
 }
 
 type SignupResponse {
@@ -26,17 +27,73 @@ type Category {
   id: ID!
   name: String!
   createdAt: String!
+  products: [Product]
+}
+
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  imageUrl: String
+  disabled: Boolean!
+  createdAt: String!
+  category: Category
+}
+
+type Cart {
+  id: ID!
+  user: User!
+  items: [CartItem]!
+}
+
+type CartItem {
+  id: ID!
+  product: Product!
+  quantity: Int!
+}
+
+input AddToCartRequest {
+  productId: ID!
+  quantity: Int!
+}
+
+input CreateProductRequest {
+  name: String!
+  price: Float!
+  categoryId: ID!
+  imageUrl: String
+  disabled: Boolean
+}
+
+type CategoryPage {
+  categories: [Category]
+  totalCount: Int
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+}
+
+type ProductPage {
+  products: [Product]
+  totalCount: Int
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
 }
 
 type Query {
   getUser(id: ID!): User
   getUsers: [User]
   getCategory(id: ID!): Category
-  getCategories: [Category]
+  getCategories(limit: Int, offset: Int): CategoryPage
+  getProduct(id: ID!): Product
+  getProducts(limit: Int, offset: Int): ProductPage
+  getProductsByCategoryId(id: ID!, limit: Int, offset: Int): ProductPage
+  getCart(userId: ID!): Cart
 }
 
 type Mutation {
   signup(username: String!, password: String!, role: UserRole!): SignupResponse
   signin(username: String!, password: String!): SigninResponse
   createCategory(name: String!): Category
+  createProduct(input: CreateProductRequest!): Product
+  addToCart(userId: ID!, input: AddToCartRequest!): Cart
 }

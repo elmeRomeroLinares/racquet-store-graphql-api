@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import { AppDataSource } from './data-source';
 import { loadSchemaSync } from '@graphql-tools/load';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
+import { categoryResolver } from './resolvers/categoryResolver';
+import { productResolver } from './resolvers/productResolver';
+import { cartResolver } from './resolvers/cartResolver';
 
 dotenv.config();
 
@@ -15,7 +18,7 @@ const typeDefs = loadSchemaSync('src/schema/schema.graphql', {
 AppDataSource.initialize().then(() => {
   const server = new ApolloServer({
     typeDefs,
-    resolvers: [userResolver],
+    resolvers: [userResolver, categoryResolver, productResolver, cartResolver],
   });
 
   server.listen().then(({ url }) => {

@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { Cart } from "./Cart";
 
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -23,4 +24,7 @@ export class User {
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
+
+  @OneToOne(() => Cart, cart => cart.user)
+  cart: Cart;
 }
