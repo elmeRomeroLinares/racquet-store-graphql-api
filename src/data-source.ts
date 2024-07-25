@@ -5,6 +5,8 @@ import { Category } from './entities/Category';
 import { Product } from './entities/Product';
 import { Cart } from './entities/Cart';
 import { CartItem } from './entities/CartItem';
+import { Order } from './entities/Order';
+import { OrderItem } from './entities/OrderItem';
 
 dotenv.config();
 
@@ -23,7 +25,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [User, Category, Product, Cart, CartItem],
+  entities: [User, Category, Product, Cart, CartItem, Order, OrderItem],
   migrations: [],
   subscribers: [],
 });

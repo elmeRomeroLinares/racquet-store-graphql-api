@@ -79,6 +79,27 @@ type ProductPage {
   hasPreviousPage: Boolean
 }
 
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+}
+
+type Order {
+  id: ID!
+  user: User!
+  items: [OrderItem]!
+  createdAt: String!
+  modifiedAt: String!
+  status: OrderStatus!
+}
+
+type OrderItem {
+  id: ID!
+  product: Product!
+  quantity: Int!
+}
+
 type Query {
   getUser(id: ID!): User
   getUsers: [User]
@@ -88,6 +109,8 @@ type Query {
   getProducts(limit: Int, offset: Int): ProductPage
   getProductsByCategoryId(id: ID!, limit: Int, offset: Int): ProductPage
   getCart(userId: ID!): Cart
+  getOrder(id: ID!): Order
+  getOrders(userId: ID!): [Order]
 }
 
 type Mutation {
@@ -96,4 +119,6 @@ type Mutation {
   createCategory(name: String!): Category
   createProduct(input: CreateProductRequest!): Product
   addToCart(userId: ID!, input: AddToCartRequest!): Cart
+  createOrder(userId: ID!): Order
+  updateOrderStatus(id: ID!, status: OrderStatus!): Order
 }
