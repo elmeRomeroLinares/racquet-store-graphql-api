@@ -1,5 +1,5 @@
-import { Product } from "./entities/Product";
-import { UserRole } from "./entities/User";
+import { Product } from './entities/Product';
+import { UserRole } from './entities/User';
 
 export interface CreateProductRequest {
   name: string;
@@ -29,8 +29,8 @@ export interface UpdateProductsArgs {
 export interface ProductsPage {
   products: Product[];
   totalCount: number;
-  hasNextPage: Boolean;
-  hasPeviousPage: Boolean;
+  hasNextPage: boolean;
+  hasPeviousPage: boolean;
 }
 
 export interface AddProductToCartRequest {
@@ -39,7 +39,7 @@ export interface AddProductToCartRequest {
 }
 
 export interface AddProductToCartArgs {
-  input: AddProductToCartRequest
+  input: AddProductToCartRequest;
 }
 
 export interface PaginationArgs {

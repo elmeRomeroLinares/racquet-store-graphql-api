@@ -7,7 +7,7 @@ export class CartItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Cart, cart => cart.items)
+  @ManyToOne(() => Cart, (cart) => cart.items)
   cart: Cart;
 
   // On a real db the deletion of a product may be reflected better by a product status DELETED

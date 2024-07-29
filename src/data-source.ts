@@ -10,14 +10,14 @@ import { OrderItem } from './entities/OrderItem';
 
 dotenv.config();
 
-const dbPort = process.env.DB_PORT
+const dbPort = process.env.DB_PORT;
 
 if (!dbPort) {
-    throw new Error('Environment variable db_port is missing')
+  throw new Error('Environment variable db_port is missing');
 }
 
 export const AppDataSource = new DataSource({
-  type: "postgres",
+  type: 'postgres',
   host: process.env.DB_HOST,
   port: parseInt(dbPort, 10),
   username: process.env.DB_USERNAME,

@@ -7,7 +7,7 @@ import { comparePassword, hashPassword } from '../utils/hash';
 export const userResolver = {
   Query: {
     getUser: async (_: any, { id }: { id: string }, context: { user: any }) => {
-      const authenticatedUser = context.user as JWTPayload
+      const authenticatedUser = context.user as JWTPayload;
       if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
         throw new Error('Not authorized');
       }
@@ -15,7 +15,7 @@ export const userResolver = {
       return userRepository.findOneBy({ id });
     },
     getUsers: async (_: any, context: { user: any }) => {
-      const authenticatedUser = context.user as JWTPayload
+      const authenticatedUser = context.user as JWTPayload;
       if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
         throw new Error('Not authorized');
       }
@@ -24,14 +24,28 @@ export const userResolver = {
     },
   },
   Mutation: {
-    signup: async (_: any, { username, password, role }: { username: string; password: string; role: UserRole }) => {
+    signup: async (
+      _: any,
+      {
+        username,
+        password,
+        role,
+      }: { username: string; password: string; role: UserRole },
+    ) => {
       const userRepository = AppDataSource.getRepository(User);
       const hashedPassword = await hashPassword(password);
-      const user = userRepository.create({ username, password: hashedPassword, role });
+      const user = userRepository.create({
+        username,
+        password: hashedPassword,
+        role,
+      });
       await userRepository.save(user);
       return user;
     },
-    signin: async (_: any, { username, password }: { username: string; password: string }) => {
+    signin: async (
+      _: any,
+      { username, password }: { username: string; password: string },
+    ) => {
       const userRepository = AppDataSource.getRepository(User);
       const user = await userRepository.findOneBy({ username });
 
@@ -47,8 +61,7 @@ export const userResolver = {
 
       const token = generateToken(user.id, user.role);
 
-      return { token }
+      return { token };
     },
   },
 };
-

@@ -1,31 +1,30 @@
-import { AppDataSource } from "../data-source";
-import { Product } from "../entities/Product";
-import { Category } from "../entities/Category";
+import { AppDataSource } from '../data-source';
+import { Product } from '../entities/Product';
+import { Category } from '../entities/Category';
 import {
   CreateProductArgs,
   JWTPayload,
   PaginationArgs,
   ProductsPage,
   UpdateProductsArgs,
-} from "../types";
-import { User } from "../entities/User";
-import { url } from "inspector";
+} from '../types';
+import { User } from '../entities/User';
 
 export const productResolver = {
   Query: {
     getProduct: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
     ): Promise<Product | null> => {
       const productRepository = AppDataSource.getRepository(Product);
       return productRepository.findOne({
         where: { id },
-        relations: ["category"],
+        relations: ['category'],
       });
     },
     getProducts: async (
       _: any,
-      { limit = 10, offset = 0 }: PaginationArgs
+      { limit = 10, offset = 0 }: PaginationArgs,
     ): Promise<ProductsPage> => {
       const productRepository = AppDataSource.getRepository(Product);
 
@@ -35,7 +34,7 @@ export const productResolver = {
       const products = await productRepository.find({
         take: limit,
         skip: offset,
-        relations: ["category"],
+        relations: ['category'],
       });
 
       return {
@@ -51,7 +50,7 @@ export const productResolver = {
         categoryId,
         limit = 10,
         offset = 0,
-      }: { categoryId: string; limit: number; offset: number }
+      }: { categoryId: string; limit: number; offset: number },
     ): Promise<ProductsPage> => {
       const productRepository = AppDataSource.getRepository(Product);
 
@@ -60,7 +59,7 @@ export const productResolver = {
         where: { category: { id: categoryId } },
         take: limit,
         skip: offset,
-        relations: ["category"],
+        relations: ['category'],
       });
 
       return {
@@ -75,11 +74,11 @@ export const productResolver = {
     createProduct: async (
       _: any,
       { input }: CreateProductArgs,
-      context: { user: any }
+      context: { user: any },
     ): Promise<Product> => {
       const authenticatedUser = context.user as JWTPayload;
-      if (!authenticatedUser || authenticatedUser.role !== "ADMIN") {
-        throw new Error("Not authorized");
+      if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
+        throw new Error('Not authorized');
       }
 
       const productRepository = AppDataSource.getRepository(Product);
@@ -89,7 +88,7 @@ export const productResolver = {
 
       const category = await categoryRepository.findOneBy({ id: categoryId });
       if (!category) {
-        throw new Error("Category not found");
+        throw new Error('Category not found');
       }
 
       const product = productRepository.create({
@@ -105,11 +104,11 @@ export const productResolver = {
     updateProduct: async (
       _: any,
       { input }: UpdateProductsArgs,
-      context: { user: any }
+      context: { user: any },
     ): Promise<Product> => {
       const authenticatedUser = context.user as JWTPayload;
-      if (!authenticatedUser || authenticatedUser.role !== "ADMIN") {
-        throw new Error("Not authorized");
+      if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
+        throw new Error('Not authorized');
       }
 
       const productRepository = AppDataSource.getRepository(Product);
@@ -138,18 +137,18 @@ export const productResolver = {
     deleteProduct: async (
       _: any,
       { id }: { id: string },
-      context: { user: any }
+      context: { user: any },
     ): Promise<boolean> => {
       const authenticatedUser = context.user as JWTPayload;
-      if (!authenticatedUser || authenticatedUser.role !== "ADMIN") {
-        throw new Error("Not authorized");
+      if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
+        throw new Error('Not authorized');
       }
 
       const productRepository = AppDataSource.getRepository(Product);
 
       const product = await productRepository.findOneBy({ id });
       if (!product) {
-        throw new Error("Product not found");
+        throw new Error('Product not found');
       }
 
       await productRepository.remove(product);
@@ -158,34 +157,34 @@ export const productResolver = {
     async likeProduct(
       _: any,
       { id }: { id: string },
-      context: { user: any }
+      context: { user: any },
     ): Promise<Product[]> {
       const authenticatedUser = context.user as JWTPayload;
-  
+
       if (!authenticatedUser) {
-        throw new Error("Not authorized");
-      }
-  
-      const userRepository = AppDataSource.getRepository(User);
-      const productRepository = AppDataSource.getRepository(Product);
-  
-      const user = await userRepository.findOne({
-        where: { id: authenticatedUser.id },
-        relations: ["likedProducts"]
-      });
-      const product = await productRepository.findOneBy({ id });
-  
-      if (!user || !product) {
-        throw new Error("User or Product not found");
+        throw new Error('Not authorized');
       }
 
-      if (user.likedProducts.some(p => p.id === product.id)) {
-        return user.likedProducts
+      const userRepository = AppDataSource.getRepository(User);
+      const productRepository = AppDataSource.getRepository(Product);
+
+      const user = await userRepository.findOne({
+        where: { id: authenticatedUser.id },
+        relations: ['likedProducts'],
+      });
+      const product = await productRepository.findOneBy({ id });
+
+      if (!user || !product) {
+        throw new Error('User or Product not found');
       }
-  
-      user.likedProducts.push(product)
+
+      if (user.likedProducts.some((p) => p.id === product.id)) {
+        return user.likedProducts;
+      }
+
+      user.likedProducts.push(product);
       const modifiedUser = await userRepository.save(user);
-  
+
       return modifiedUser.likedProducts;
     },
   },

@@ -10,7 +10,7 @@ export const categoryResolver = {
     },
     getCategories: async (
       _: any,
-      { limit = 10, offset = 0 }: { limit: number; offset: number }
+      { limit = 10, offset = 0 }: { limit: number; offset: number },
     ) => {
       const categoryRepository = AppDataSource.getRepository(Category);
 
@@ -32,12 +32,16 @@ export const categoryResolver = {
     },
   },
   Mutation: {
-    createCategory: async (_: any, { name }: { name: string }, context: { user: any }) => {
-      const authenticatedUser = context.user as JWTPayload
+    createCategory: async (
+      _: any,
+      { name }: { name: string },
+      context: { user: any },
+    ) => {
+      const authenticatedUser = context.user as JWTPayload;
       if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
         throw new Error('Not authorized');
       }
-      
+
       const categoryRepository = AppDataSource.getRepository(Category);
       const category = categoryRepository.create({ name });
       await categoryRepository.save(category);
