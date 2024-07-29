@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { Cart } from "./Cart";
 import { Order } from "./Order";
+import { Product } from "./Product";
 
 export enum UserRole {
   ADMIN = "ADMIN",
@@ -30,4 +31,8 @@ export class User {
 
   @OneToMany(() => Order, order => order.user)
   orders: Order[];
+
+  @ManyToMany(() => Product, product => product.likedBy)
+  @JoinTable()
+  likedProducts: Product[];
 }

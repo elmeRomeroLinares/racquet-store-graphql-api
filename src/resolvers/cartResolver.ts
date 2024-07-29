@@ -3,6 +3,7 @@ import { User } from "../entities/User";
 import { Cart } from "../entities/Cart";
 import { CartItem } from "../entities/CartItem";
 import { Product } from "../entities/Product";
+import { AddProductToCartArgs, JWTPayload } from "../types";
 
 export const cartResolver = {
   Query: {
@@ -28,18 +29,21 @@ export const cartResolver = {
   Mutation: {
     addToCart: async (
       _: any,
-      {
-        userId,
-        input,
-      }: { userId: string; input: { productId: string; quantity: number } }
+      { input }: AddProductToCartArgs,
+      context: { user: any }
     ): Promise<Cart> => {
+      const authenticatedUser = context.user as JWTPayload;
+      if (!authenticatedUser) {
+        throw new Error("Not authorized");
+      }
+
       const cartRepository = AppDataSource.getRepository(Cart);
       const userRepository = AppDataSource.getRepository(User);
       const productRepository = AppDataSource.getRepository(Product);
       const cartItemRepository = AppDataSource.getRepository(CartItem);
 
       const user = await userRepository.findOne({
-        where: { id: userId },
+        where: { id: authenticatedUser.id },
         relations: ["cart"],
       });
       if (!user) {
@@ -73,12 +77,17 @@ export const cartResolver = {
       }
 
       await cartItemRepository.save(cartItem);
-      cart.items = await cartItemRepository.find({
-        where: { cart: { id: cart.id } },
-        relations: ["product"],
-      });
 
-      return cart;
+      const updatedCart = await cartRepository.findOne({
+        where: { id : cart.id},
+        relations: ["user", "items", "items.product"]
+      })
+
+      if (updatedCart === null) {
+        throw new Error("Something went wrong when adding the product to cart")
+      }
+
+      return updatedCart;
     },
   },
 };

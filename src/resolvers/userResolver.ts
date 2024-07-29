@@ -1,15 +1,24 @@
 import { AppDataSource } from '../data-source';
 import { User, UserRole } from '../entities/User';
+import { JWTPayload } from '../types';
 import { generateToken } from '../utils/auth';
 import { comparePassword, hashPassword } from '../utils/hash';
 
 export const userResolver = {
   Query: {
-    getUser: async (_: any, { id }: { id: string }) => {
+    getUser: async (_: any, { id }: { id: string }, context: { user: any }) => {
+      const authenticatedUser = context.user as JWTPayload
+      if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
+        throw new Error('Not authorized');
+      }
       const userRepository = AppDataSource.getRepository(User);
       return userRepository.findOneBy({ id });
     },
-    getUsers: async () => {
+    getUsers: async (_: any, context: { user: any }) => {
+      const authenticatedUser = context.user as JWTPayload
+      if (!authenticatedUser || authenticatedUser.role !== 'ADMIN') {
+        throw new Error('Not authorized');
+      }
       const userRepository = AppDataSource.getRepository(User);
       return userRepository.find();
     },
@@ -36,7 +45,7 @@ export const userResolver = {
         throw new Error('Invalid password');
       }
 
-      const token = generateToken(user.id, user.username);
+      const token = generateToken(user.id, user.role);
 
       return { token }
     },

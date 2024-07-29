@@ -10,7 +10,8 @@ export class CartItem {
   @ManyToOne(() => Cart, cart => cart.items)
   cart: Cart;
 
-  @ManyToOne(() => Product)
+  // On a real db the deletion of a product may be reflected better by a product status DELETED
+  @ManyToOne(() => Product, { onDelete: 'CASCADE' })
   product: Product;
 
   @Column()

@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
+  ManyToMany,
 } from "typeorm";
 import { Category } from "./Category";
+import { User } from "./User";
 
 @Entity()
 export class Product {
@@ -35,4 +37,7 @@ export class Product {
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: "categoryId" })
   category: Category;
+
+  @ManyToMany(() => User, user => user.likedProducts)
+  likedBy: User[];
 }

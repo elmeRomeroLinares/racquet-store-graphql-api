@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server';
 import { userResolver } from './resolvers/userResolver';
 import dotenv from 'dotenv';
+import express from 'express'
 import { AppDataSource } from './data-source';
 import { loadSchemaSync } from '@graphql-tools/load';
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
@@ -14,7 +15,7 @@ import jwt from 'jsonwebtoken'
 dotenv.config();
 
 const typeDefs = loadSchemaSync('src/schema/schema.graphql', {
-  loaders: [new GraphQLFileLoader()]
+  loaders: [new GraphQLFileLoader()],
 })
 
 const getUserFromToken = (token: string) => {
@@ -23,7 +24,7 @@ const getUserFromToken = (token: string) => {
     throw new Error('Environment variable jwt_sectet is missing')
   }
   try {
-    return jwt.verify(token, SECRET_KEY);
+    return jwt.verify(token, SECRET_KEY, { ignoreExpiration: false });
   } catch (e) {
     return null;
   }
@@ -36,7 +37,6 @@ AppDataSource.initialize().then(() => {
     context: ({ req }) => {
       const token = req.headers.authorization || '';
       const user = getUserFromToken(token)
-      console.log(user)
       return { user };
     }
   });

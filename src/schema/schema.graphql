@@ -7,7 +7,6 @@ enum UserRole {
 type User {
   id: ID!
   username: String!
-  password: String!
   role: UserRole!
   createdAt: String!
   cart: Cart
@@ -65,6 +64,15 @@ input CreateProductRequest {
   disabled: Boolean
 }
 
+input UpdateProductRequest {
+  id: ID!
+  name: String
+  price: Float
+  imageUrl: String
+  disabled: Boolean
+  categoryId: ID
+}
+
 type CategoryPage {
   categories: [Category]
   totalCount: Int
@@ -110,7 +118,8 @@ type Query {
   getProductsByCategoryId(id: ID!, limit: Int, offset: Int): ProductPage
   getCart(userId: ID!): Cart
   getOrder(id: ID!): Order
-  getOrders(userId: ID!): [Order]
+  getUserOrders(userId: ID): [Order]
+  getUsersOrders(limit: Int, offset: Int): [Order]
 }
 
 type Mutation {
@@ -118,7 +127,10 @@ type Mutation {
   signin(username: String!, password: String!): SigninResponse
   createCategory(name: String!): Category
   createProduct(input: CreateProductRequest!): Product
-  addToCart(userId: ID!, input: AddToCartRequest!): Cart
-  createOrder(userId: ID!): Order
+  updateProduct(input: UpdateProductRequest!): Product
+  deleteProduct(id: ID!): Boolean
+  likeProduct(id: ID!): [Product]
+  addToCart(input: AddToCartRequest!): Cart
+  createOrder(userId: ID): Order
   updateOrderStatus(id: ID!, status: OrderStatus!): Order
 }
