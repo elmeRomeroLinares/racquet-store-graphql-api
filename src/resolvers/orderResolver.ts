@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data-source';
-import { User } from '../entities/User';
+import { User, UserRole } from '../entities/User';
 import { Order, OrderStatus } from '../entities/Order';
 import { OrderItem } from '../entities/OrderItem';
 import { CartItem } from '../entities/CartItem';
@@ -129,7 +129,12 @@ export const orderResolver = {
     updateOrderStatus: async (
       _: any,
       { id, status }: { id: string; status: OrderStatus },
+      context: { user: any },
     ): Promise<Order> => {
+      const authenticatedUser = context.user as JWTPayload;
+      if (!authenticatedUser || authenticatedUser.role !== UserRole.ADMIN) {
+        throw new Error('Not authorized');
+      }
       const orderRepository = AppDataSource.getRepository(Order);
 
       const order = await orderRepository.findOneBy({ id });
